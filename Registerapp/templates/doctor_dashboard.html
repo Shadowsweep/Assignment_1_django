@@ -222,7 +222,23 @@
                     const cookie = cookies[i].trim();
                     if (cookie.substring(0, name.length + 1) === (name + '=')) {
                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+                        break;    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const summaries = document.querySelectorAll('.summary');  // Select all elements with class 'summary'
+
+            summaries.forEach(function(summary) {
+                const text = summary.textContent.trim();  // Get text content and trim whitespace
+                const words = text.split(' ');  // Split text into words
+                const maxWords = 15;  // Maximum words allowed
+
+                if (words.length > maxWords) {
+                    // Truncate words to maxWords and join with ' ' separator
+                    const truncatedText = words.slice(0, maxWords).join(' ') + '...';
+                    summary.textContent = truncatedText;  // Update summary text content
+                }
+            });
+        });
+    </script>
                     }
                 }
             }

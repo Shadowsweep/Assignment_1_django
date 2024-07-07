@@ -106,7 +106,10 @@ def dashboard(request):
         return redirect('create_profile')
     
     if profile.user_type == 'Patient':
-        return render(request, 'dashboard.html', {'profile': profile})
+        
+        blogs = Blog.objects.all().order_by('-created_at')
+        return render(request, 'dashboard.html', {'profile': profile, 'blogs': blogs})
+    
     elif profile.user_type == 'Doctor':
         messages.success(request, 'Post uploaded successfully!')
         profile = request.user.profile

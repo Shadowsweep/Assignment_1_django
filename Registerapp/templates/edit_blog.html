@@ -98,7 +98,7 @@
             <label for="id_image">Image:</label>
             <input type="file" id="id_image" name="image">
             {% if blog.image %}
-                <p>Current image: {{ blog.image.name }}</p>
+                <p>Current image: {{ blog.image.url }}</p>
             {% endif %}
         </div>
         <div class="form-group">
