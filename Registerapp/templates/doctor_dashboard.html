@@ -134,6 +134,14 @@
         .btn:hover {
             opacity: 0.8;
         }
+        .draft-heading {
+    background-color: #ffcc00;
+    color: #333;
+    padding: 5px 10px;
+    display: inline-block;
+    margin-bottom: 10px;
+    border-radius: 3px;
+}
     </style>
 </head>
 <body>  
@@ -183,12 +191,17 @@
                         <p><strong>Category:</strong> {{ blog.category }}</p>
                         <p><strong>Summary:</strong> {{ blog.summary|truncatechars:100 }}</p>
                         <p><strong>Created at:</strong> {{ blog.created_at|date:"F d, Y" }}</p>
+                        <p><strong>Status:</strong> {{ blog.status|capfirst }}</p>
                         <div class="blog-actions">
                             <a href="{% url 'edit_blog' blog.id %}" class="btn btn-edit">Edit</a>
                             <a href="{% url 'delete_blog' blog.id %}" 
-                            onclick="return confirm('Are you sure you want to delete this blog post?');"
-                            class="btn btn-delete">Delete</a>
+                               onclick="return confirm('Are you sure you want to delete this blog post?');"
+                               class="btn btn-delete">Delete</a>
+                               {% if blog.status == 'drafted' %}
+                                   <h4 class="draft-heading">DRAFT</h4>
+                                    {% endif %}
                         </div>
+
                     </div>
                 </div>
             {% endfor %}
@@ -222,23 +235,7 @@
                     const cookie = cookies[i].trim();
                     if (cookie.substring(0, name.length + 1) === (name + '=')) {
                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const summaries = document.querySelectorAll('.summary');  // Select all elements with class 'summary'
-
-            summaries.forEach(function(summary) {
-                const text = summary.textContent.trim();  // Get text content and trim whitespace
-                const words = text.split(' ');  // Split text into words
-                const maxWords = 15;  // Maximum words allowed
-
-                if (words.length > maxWords) {
-                    // Truncate words to maxWords and join with ' ' separator
-                    const truncatedText = words.slice(0, maxWords).join(' ') + '...';
-                    summary.textContent = truncatedText;  // Update summary text content
-                }
-            });
-        });
-    </script>
+                        break;
                     }
                 }
             }

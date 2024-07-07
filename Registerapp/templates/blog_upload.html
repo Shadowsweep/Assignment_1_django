@@ -80,7 +80,7 @@
 </head>
 <body>
     <h2>Create new Blog Post</h2>
-    <form method="post" enctype="multipart/form-data" action="{% url 'create_blog_post' %}">
+    <form id="blogForm" method="post" enctype="multipart/form-data" action="{% url 'create_blog_post' %}">
         {% csrf_token %}
         <div class="form-group">
             <label for="id_user_type">User Type:</label>
@@ -118,9 +118,10 @@
             <textarea id="id_content" name="content" rows="5"></textarea>
         </div>
         <div class="form-group">
-            <button type="submit" onclick="showSuccessAlert()" >Upload Post</button>
-            <button type="reset">Save as Draft </button>
+            <button type="button" onclick="submitForm('create')">Upload Post</button>
+            <button type="button" onclick="submitForm('draft')">Save as Draft</button>
         </div>
+   
     </form>
     <script>
    
@@ -135,6 +136,20 @@
             });
         }
     </script>
+    <script>
+        function submitForm(action) {
+            var form = document.getElementById('blogForm');
+            if (action === 'create') {
+                form.action = "{% url 'create_blog_post' %}";
+                showSuccessAlert();
+            } else if (action === 'draft') {
+                form.action = "{% url 'draft_blog' %}";
+            }
+            form.submit();
+        }
+        
+        
+        </script>
 
 
 </body>

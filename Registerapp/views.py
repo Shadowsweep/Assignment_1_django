@@ -13,6 +13,8 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from rest_framework import status
 
 @api_view(['GET', 'POST'])
 def create_profile(request):
@@ -209,7 +211,11 @@ def create_blog_post(request):
     if request.method == 'POST':
         data = request.data.copy()
         data['username'] = request.user.username
-
+        if not data.get('status'):
+            data['status'] = 'drafted'
+        
+        # Print the final status
+        print("Final status:", data['status'])
         blog_serializer = BlogSerializer(data=data)
         if blog_serializer.is_valid():
             blog_serializer.save()
@@ -221,6 +227,38 @@ def create_blog_post(request):
             return Response(blog_serializer.errors, status=400)
 
     return render(request, 'blog_upload.html', {'user': request.user})
+
+@api_view(['POST'])
+def draft_blog(request):
+    if request.method == 'POST':
+        data = request.data.copy()
+        data['username'] = request.user.username
+        
+        # Print the status from the request data
+        print("Status from request:", data.get('status'))
+        
+        # Set status to 'drafted' if not provided or if it's None/null
+        if not data.get('status'):
+            data['status'] = 'drafted'
+        
+        # Print the final status
+        print("Final status:", data['status'])
+        
+        blog_serializer = BlogSerializer(data=data)
+        if blog_serializer.is_valid():
+            blog_post = blog_serializer.save()
+            # Print the saved status
+            print("Saved status:", blog_post.status)
+            messages.success(request, 'Blog Post saved successfully!')
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Failed to upload post. Please check your input.')
+            return Response(blog_serializer.errors, status=400)
+
+    return render(request, 'blog_upload.html', {'user': request.user})
+    
+
+
 
 @api_view(['GET', 'POST'])
 @login_required

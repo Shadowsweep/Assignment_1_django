@@ -26,3 +26,4 @@ class Blog(models.Model):
     summary = models.CharField(max_length=2000,null=True,blank=True,default='')
     content = models.CharField(max_length=2000,null=True,blank=True,default='')
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, null=True,blank=True, default='')
