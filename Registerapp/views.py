@@ -108,20 +108,21 @@ def dashboard(request):
         return redirect('create_profile')
     
     if profile.user_type == 'Patient':
-        
-        blogs = Blog.objects.all().order_by('-created_at')
+        # Exclude blogs with status 'drafted' for patients
+        blogs = Blog.objects.exclude(status='drafted').order_by('-created_at')
         return render(request, 'dashboard.html', {'profile': profile, 'blogs': blogs})
     
     elif profile.user_type == 'Doctor':
         messages.success(request, 'Post uploaded successfully!')
         profile = request.user.profile
+        # Exclude blogs with status 'drafted' for doctors
         blogs = Blog.objects.filter(username=request.user.username).order_by('-created_at')
         
         return render(request, 'doctor_dashboard.html', {'profile': profile, 'blogs': blogs})
-        # return render(request, 'doctor_dashboard.html', {'profile': profile})
     else:
         # Handle other user types if needed
         return redirect('home')  # Redirect to appropriate page
+
 
 # @api_view(['GET', 'POST'])
 # def create_user(request):
@@ -212,7 +213,7 @@ def create_blog_post(request):
         data = request.data.copy()
         data['username'] = request.user.username
         if not data.get('status'):
-            data['status'] = 'drafted'
+            data['status'] = 'published'
         
         # Print the final status
         print("Final status:", data['status'])
