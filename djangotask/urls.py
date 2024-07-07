@@ -30,6 +30,10 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.log_out, name='login'),
+    path('blog_create/', views.blog_create, name='blog_create'),
+    path('create_blog_post/', views.create_blog_post, name='create_blog_post'),
+    path('edit-blog/<int:blog_id>/', views.edit_blog, name='edit_blog'),
+    path('delete-blog/<int:blog_id>/', views.delete_blog, name='delete_blog'),
     
     # path('register/', views.register_user, name='register_user'),
     

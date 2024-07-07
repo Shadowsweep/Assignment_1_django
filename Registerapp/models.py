@@ -15,3 +15,14 @@ class Profile(models.Model):
     state = models.CharField(max_length=100,blank=False, default='')
     pincode = models.CharField(max_length=10,blank=False, default='')
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    
+
+class Blog(models.Model):
+    user_type = models.CharField(max_length=255, blank=False, default='Doctor')
+    username = models.CharField(max_length=255,null=True,blank=True,default='')
+    title = models.CharField(max_length=255,null=True,blank=True,default='')
+    image = models.ImageField(upload_to='static/', blank=True)
+    category = models.CharField(max_length=255,null=True,blank=True,default='')
+    summary = models.CharField(max_length=2000,null=True,blank=True,default='')
+    content = models.CharField(max_length=2000,null=True,blank=True,default='')
+    created_at = models.DateTimeField(auto_now_add=True)

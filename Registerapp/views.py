@@ -1,13 +1,18 @@
 from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import ProfileSerializer ,UserSerializer
+from .serializers import ProfileSerializer ,UserSerializer ,BlogSerializer
 from django.views.decorators.http import require_POST
-from .models import Profile
+from .models import Profile ,Blog
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import user_passes_test 
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth.models import User
 
 @api_view(['GET', 'POST'])
 def create_profile(request):
@@ -34,9 +39,6 @@ def delete_profile(request, profile_id):
     return redirect('profile_list')
 
 
-from django.shortcuts import get_object_or_404, render, redirect
-from .models import Profile
-from django.contrib.auth.models import User
 
 def edit_profile(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
@@ -85,6 +87,12 @@ def homepage(request):
     return render(request, 'home_page.html')
 
 @api_view(['GET', 'POST'])
+def blog_create(request):
+    return render(request, 'blog_upload.html')
+
+
+
+@api_view(['GET', 'POST'])
 def log_out(request):
     return render(request, 'logged_out.html')
 
@@ -92,14 +100,23 @@ def log_out(request):
 @api_view(['GET', 'POST'])
 def dashboard(request):
     try:
-        
         profile = Profile.objects.get(user=request.user)
-        print("dsahboard me user ",profile)
     except Profile.DoesNotExist:
         # If the profile doesn't exist, redirect to create profile page
         return redirect('create_profile')
     
-    return render(request, 'dashboard.html', {'profile': profile})
+    if profile.user_type == 'Patient':
+        return render(request, 'dashboard.html', {'profile': profile})
+    elif profile.user_type == 'Doctor':
+        messages.success(request, 'Post uploaded successfully!')
+        profile = request.user.profile
+        blogs = Blog.objects.filter(username=request.user.username).order_by('-created_at')
+        
+        return render(request, 'doctor_dashboard.html', {'profile': profile, 'blogs': blogs})
+        # return render(request, 'doctor_dashboard.html', {'profile': profile})
+    else:
+        # Handle other user types if needed
+        return redirect('home')  # Redirect to appropriate page
 
 # @api_view(['GET', 'POST'])
 # def create_user(request):
@@ -174,3 +191,66 @@ def login_view(request):
     return render(request, 'login.html')
 
 
+# @api_view(['GET', 'POST'])
+# def create_blog_post(request):
+#     if request.method == 'POST':
+#         blog_serializer = BlogSerializer(data=request.data)
+#         if blog_serializer.is_valid():
+#             blog_serializer.save()
+#             return render(request, 'doctor_dashboard.html', {'message': "Record Submitted Successfully"})
+#         return Response(blog_serializer.errors, status=400)
+#     return render(request, 'blog_upload.html')
+
+@api_view(['GET', 'POST'])
+def create_blog_post(request):
+    if request.method == 'POST':
+        data = request.data.copy()
+        data['username'] = request.user.username
+
+        blog_serializer = BlogSerializer(data=data)
+        if blog_serializer.is_valid():
+            blog_serializer.save()
+            # print(blog_serializer)
+            messages.success(request, ' Blog Post uploaded successfully!')
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Failed to upload post. Please check your input.')
+            return Response(blog_serializer.errors, status=400)
+
+    return render(request, 'blog_upload.html', {'user': request.user})
+
+@api_view(['GET', 'POST'])
+@login_required
+def edit_blog(request, blog_id):
+    blog = get_object_or_404(Blog, id=blog_id, username=request.user.username)
+    
+    if request.method == 'POST':
+        serializer = BlogSerializer(blog, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            messages.success(request, 'Blog post updated successfully!')
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Failed to update blog post. Please check your input.')
+            return render(request, 'edit_blog.html', {'blog': blog, 'errors': serializer.errors})
+    
+    # If it's a GET request, just render the form
+    serializer = BlogSerializer(blog)
+    return render(request, 'edit_blog.html', {'blog': serializer.data})
+
+
+
+# @api_view(['GET', 'POST'])
+# @require_POST
+# def delete_blog(request, blog_id):
+#     blog = get_object_or_404(Blog, id=blog_id)
+#     blog.delete()
+#     return JsonResponse({'success': True})
+
+@api_view(['GET', 'POST'])
+@login_required
+def delete_blog(request, blog_id):
+    blog = get_object_or_404(Blog, id=blog_id, username=request.user.username)
+    blog.delete()
+    messages.success(request, 'Blog post deleted successfully.')
+    return redirect('dashboard')
