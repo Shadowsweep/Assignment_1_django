@@ -15,6 +15,7 @@ class Profile(models.Model):
     state = models.CharField(max_length=100,blank=False, default='')
     pincode = models.CharField(max_length=10,blank=False, default='')
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    speciality = models.CharField(max_length=200,blank=True,null=True, default='')
     
 
 class Blog(models.Model):

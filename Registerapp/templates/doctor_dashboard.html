@@ -145,14 +145,15 @@
     </style>
 </head>
 <body>  
-    <h1 class="heading"  > Dashboard </h1>
-    <h1>Hello, Dr. {{ profile.first_name }}  </h1>
+    <h1 class="heading"  > Doctor  Dashboard </h1>
+    <h1>Hello, Dr.  {{ profile.first_name }}  </h1>
     <div class="dashboard-container">
         
         <div class="profile-info">
             <img src="{{ profile.profile_picture.url }}" alt="Profile Picture">
             <h2>{{ profile.first_name }} {{ profile.last_name }}</h2>
-            <p>{{ profile.user_type }}</p>
+            {% comment %} <h2>{{ profile.user_type }}</h2> {% endcomment %}
+            <h2> Speciality : {{ profile.speciality }}</h2>
         </div>
         <div class="details">
             <h3>Address:</h3>

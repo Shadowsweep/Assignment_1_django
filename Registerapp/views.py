@@ -110,7 +110,8 @@ def dashboard(request):
     if profile.user_type == 'Patient':
         # Exclude blogs with status 'drafted' for patients
         blogs = Blog.objects.exclude(status='drafted').order_by('-created_at')
-        return render(request, 'dashboard.html', {'profile': profile, 'blogs': blogs})
+        doctors = Profile.objects.filter(user_type='Doctor')
+        return render(request, 'dashboard.html', {'profile': profile, 'blogs': blogs, 'doctors': doctors})
     
     elif profile.user_type == 'Doctor':
         messages.success(request, 'Post uploaded successfully!')
@@ -172,13 +173,13 @@ def create_user(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        user.set_password(password)  # Ensure password is hashed
+        user.set_password(password)  
         user.save()
 
         profile.user = user
         profile.save()
         
-        login(request, user)  # Log the user in
+        login(request, user) 
         del request.session['profile_id']
         
         return redirect('dashboard')
