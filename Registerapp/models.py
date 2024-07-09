@@ -28,3 +28,11 @@ class Blog(models.Model):
     content = models.CharField(max_length=2000,null=True,blank=True,default='')
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, null=True,blank=True, default='')
+    
+class Appointment(models.Model):
+    doctor_name = models.CharField(max_length=255, blank=False, default='')
+    patient_name = models.CharField(max_length=255, blank=False, default='')
+    slot_booked_date = models.CharField(max_length=255,null=True,blank=True,default='')
+    start_time = models.CharField(max_length=255,null=True,blank=True,default='')
+    end_time = models.CharField(max_length=255,null=True,blank=True,default='')
+

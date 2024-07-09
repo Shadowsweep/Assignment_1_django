@@ -35,6 +35,9 @@ urlpatterns = [
     path('draft_blog/', views.draft_blog, name='draft_blog'),
     path('edit-blog/<int:blog_id>/', views.edit_blog, name='edit_blog'),
     path('delete-blog/<int:blog_id>/', views.delete_blog, name='delete_blog'),
+    path('book-appointment/', views.book_appointment, name='book_appointment'),
+     path('check-availability/', views.check_availability, name='check_availability'),
+     path('success_form/', views.success_form, name='success_form'),
     
     # path('register/', views.register_user, name='register_user'),
     

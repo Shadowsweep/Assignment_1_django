@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import ProfileSerializer ,UserSerializer ,BlogSerializer
+from .serializers import ProfileSerializer ,UserSerializer ,BlogSerializer ,AppointmentSerializer
 from django.views.decorators.http import require_POST
-from .models import Profile ,Blog
+from .models import Profile ,Blog ,Appointment 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
@@ -15,6 +15,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from django.views.decorators.csrf import csrf_protect
+from datetime import datetime, timedelta
 
 @api_view(['GET', 'POST'])
 def create_profile(request):
@@ -87,6 +89,10 @@ def edit_profile(request, profile_id):
 @api_view(['GET', 'POST'])
 def homepage(request):
     return render(request, 'home_page.html')
+
+@api_view(['GET', 'POST'])
+def success_form(request):
+    return render(request, 'sucess_form.html')
 
 @api_view(['GET', 'POST'])
 def blog_create(request):
@@ -297,3 +303,33 @@ def delete_blog(request, blog_id):
     blog.delete()
     messages.success(request, 'Blog post deleted successfully.')
     return redirect('dashboard')
+
+
+@api_view(['GET', 'POST'])
+def book_appointment(request):
+    if request.method == 'POST':
+        # Create a mutable copy of the request data
+        mutable_data = request.data.copy()
+
+        # Calculate end_time (45 minutes after start_time)
+        start_time = datetime.strptime(mutable_data['start_time'], '%H:%M')
+        end_time = (start_time + timedelta(minutes=45)).strftime('%H:%M')
+        mutable_data['end_time'] = end_time
+
+        serializer = AppointmentSerializer(data=mutable_data)
+        if serializer.is_valid():
+            serializer.save()
+            return redirect('success_form')  
+        return Response(serializer.errors, status=400) 
+    return render(request, 'book_appointment.html')
+
+def check_availability(request):
+    slot_booked_date = request.POST.get('slot_booked_date')
+    start_time = request.POST.get('start_time')
+    
+    existing_appointment = Appointment.objects.filter(
+        slot_booked_date=slot_booked_date,
+        start_time=start_time
+    ).exists()
+    
+    return JsonResponse({'available': not existing_appointment})

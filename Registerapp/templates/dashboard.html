@@ -277,9 +277,13 @@
                                 <img src="{{ doctor.profile_picture.url }}" alt="{{ doctor.first_name }}" class="doctor-image">
                                 <div class="doctor-content">
                                     <div class="doctor-info-container">
+                                        <p>{{ doctor.user }}</p>
                                         <h5>{{ doctor.first_name }} {{ doctor.last_name }}</h5>
                                         <p>{{ doctor.speciality }}</p>
-                                        <button class="btn btn-primary book-appointment">Book Appointment</button>
+                                        {% comment %} <button class="btn btn-primary book-appointment">Book Appointment</button> {% endcomment %}
+                                        <a href="{% url 'book_appointment' %}?doctor_name={{ doctor.first_name }} {{ doctor.last_name }}&patient_name={{ profile.first_name }} {{ profile.last_name }}&speciality={{ doctor.speciality }}" class="btn btn-primary">
+                                            Book Appointment
+                                        </a>
                                     </div>
                                 </div>
                             </div>

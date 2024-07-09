@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import  Profile ,Blog
+from .models import  Profile ,Blog ,Appointment
 from django.contrib.auth.models import User
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -25,4 +25,9 @@ class UserSerializer(serializers.ModelSerializer):
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
+        fields = '__all__'
+        
+class AppointmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Appointment
         fields = '__all__'
